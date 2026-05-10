@@ -1,112 +1,91 @@
-import './homeUser.css';
+import "./pages.css";
+import Navbar from "../components/navbar";
+import Carousel from "../components/carousel";
+import Footer from "../components/footer";
+import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
+const movies = [
+  {
+    id: 1,
+    title: "Michael",
+    genre: "Ciencia Ficción",
+    price: 6.990,
+    imageSrc: "/Michael.jpg",
+  },
+  {
+    id: 2,
+    title: "El diablo viste a la moda",
+    genre: "Drama",
+    price: 7.990,
+    imageSrc: "/ElDiabloVisteALaModa.jpg",
+  },
 
-const stats = [
-	{ label: 'Pedidos activos', value: '12' },
-	{ label: 'Mensajes nuevos', value: '5' },
-	{ label: 'Favoritos', value: '28' },
-	{ label: 'Puntos', value: '1.240' },
 ];
 
-const quickActions = [
-	{
-		title: 'Ver perfil',
-		description: 'Actualiza tus datos personales y configuración de cuenta.',
-	},
-	{
-		title: 'Mis pedidos',
-		description: 'Consulta el estado de tus compras y entregas recientes.',
-	},
-	{
-		title: 'Soporte',
-		description: 'Habla con el equipo de ayuda si necesitas asistencia.',
-	},
+const featuredSlides = [
+  {
+    id: 1,
+    imageSrc: "/DetectiveOvejaCarrusel.webp",
+    background: "linear-gradient(115deg, #0f5bd7 0%, #38bdf8 20%)",
+  },
+  {
+    id: 2,
+    imageSrc: "/MichaelCarrusel.webp",
+    background: "linear-gradient(115deg, #0f5bd7 0%, #38bdf8 20%)",
+  },
 ];
 
-const recentActivity = [
-	{ title: 'Pedido confirmado', time: 'Hace 2 horas' },
-	{ title: 'Nuevo mensaje del soporte', time: 'Ayer' },
-	{ title: 'Producto agregado a favoritos', time: 'Hace 2 días' },
-];
 
 function HomeUser() {
-	return (
-		<main className="home-user">
-			<section className="hero-card">
-				<div className="hero-copy">
-					<span className="hero-badge">Panel de usuario</span>
-					<h1>Hola, Diego</h1>
-					<p>
-						Bienvenido a tu espacio personal. Desde aquí puedes revisar tus pedidos,
-						administrar tu perfil y ver tus actividades más recientes.
-					</p>
-					<div className="hero-actions">
-						<button type="button" className="primary-button">
-							Ver mis pedidos
-						</button>
-						<button type="button" className="secondary-button">
-							Editar perfil
-						</button>
-					</div>
-				</div>
+  const { isRegistered } = useAuth();
 
-				<aside className="hero-summary">
-					<h2>Resumen rápido</h2>
-					<div className="summary-list">
-						<div>
-							<strong>4.8</strong>
-							<span>Calificación</span>
-						</div>
-						<div>
-							<strong>24</strong>
-							<span>Compras</span>
-						</div>
-						<div>
-							<strong>98%</strong>
-							<span>Satisfacción</span>
-						</div>
-					</div>
-				</aside>
-			</section>
+  return (
+    <>
+      <Navbar />
+      <main className="home-user">
+        <section className="home-user__header">
+          <h1>Cartelera</h1>
+          <p>Descubre todas las películas disponibles en Cine Flow</p>
+        </section>
 
-			<section className="stats-grid" aria-label="Resumen de métricas">
-				{stats.map((stat) => (
-					<article className="stat-card" key={stat.label}>
-						<span>{stat.label}</span>
-						<strong>{stat.value}</strong>
-					</article>
-				))}
-			</section>
+        {!isRegistered ? (
+          <section className="home-user__access-note">
+            <p>Para comprar entradas primero debes iniciar sesión o registrarte.</p>
+            <div className="home-user__access-actions">
+              <Link to="/iniciar-sesion" className="home-user__access-link">Iniciar sesión</Link>
+              <Link to="/registrarse" className="home-user__access-link home-user__access-link--primary">Registrarse</Link>
+            </div>
+          </section>
+        ) : null}
 
-			<section className="content-grid">
-				<article className="panel-card">
-					<h2>Accesos rápidos</h2>
-					<div className="action-list">
-						{quickActions.map((action) => (
-							<button type="button" className="action-card" key={action.title}>
-								<span>{action.title}</span>
-								<p>{action.description}</p>
-							</button>
-						))}
-					</div>
-				</article>
+        <Carousel slides={featuredSlides} />
 
-				<article className="panel-card">
-					<h2>Actividad reciente</h2>
-					<ul className="activity-list">
-						{recentActivity.map((item) => (
-							<li key={item.title}>
-								<div>
-									<strong>{item.title}</strong>
-									<span>{item.time}</span>
-								</div>
-							</li>
-						))}
-					</ul>
-				</article>
-			</section>
-		</main>
-	);
+        <section className="home-user__grid">
+          {movies.map((movie) => (
+            <article key={movie.id} className="movie-card">
+              <div className="movie-card__poster">
+                {movie.imageSrc ? (
+                  <img src={movie.imageSrc} alt={movie.title} className="movie-card__image" />
+                ) : (
+                  <span>Imagen no disponible</span>
+                )}
+              </div>
+              <h3 className="movie-card__title">{movie.title}</h3>
+              <p className="movie-card__genre">{movie.genre}</p>
+              <div className="movie-card__footer">
+                <span className="movie-card__rating">${movie.price.toFixed(3)}</span>
+                <button className="movie-card__btn" disabled={!isRegistered}>
+                  {isRegistered ? 'Comprar entrada' : 'Registrate para comprar'}
+                </button>
+              </div>
+            </article>
+          ))}
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
 }
 
 export default HomeUser;
