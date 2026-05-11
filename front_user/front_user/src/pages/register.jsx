@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './pages.css';
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
@@ -7,16 +7,34 @@ import { useAuth } from '../contexts/AuthContext';
 
 function Register() {
   const navigate = useNavigate();
-  const { markAsRegistered } = useAuth();
+  const { markAsRegistered, isRegisteredUser } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [emailConfirm, setEmailConfirm] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [error, setError] = useState('');
+  const [overlayMessage, setOverlayMessage] = useState('');
+
+  useEffect(() => {
+    if (!overlayMessage) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setOverlayMessage('');
+    }, 2400);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [overlayMessage]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (isRegisteredUser(email)) {
+      setOverlayMessage('Usuario ya registrado. Inicia sesión o usa otro correo.');
+      return;
+    }
     
     if (name.length < 4) {
       setError('El nombre debe tener al menos 4 caracteres');
@@ -38,9 +56,12 @@ function Register() {
       return;
     }
 
+    const normalizedName = name.trim();
+    const normalizedEmail = email.trim();
+
     markAsRegistered({
-      name: name,
-      email: email,
+      name: normalizedName,
+      email: normalizedEmail,
       password: password,
     });
     navigate('/');
@@ -124,6 +145,15 @@ function Register() {
           </p>
         </section>
       </main>
+      {overlayMessage && (
+        <div className="auth-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-overlay-title">
+          <div className="auth-overlay__panel">
+            <span className="auth-overlay__icon" aria-hidden="true">i</span>
+            <h2 id="auth-overlay-title">Registro duplicado</h2>
+            <p>{overlayMessage}</p>
+          </div>
+        </div>
+      )}
       <Footer />
     </>
   );

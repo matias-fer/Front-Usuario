@@ -3,7 +3,7 @@ export const movies = [
     id: 1,
     title: "Michael",
     genre: "Ciencia Ficción",
-    price: 6.990,
+    price: 5.990,
     imageSrc: "/Michael.jpg",
     bannerSrc: "/MichaelCarrusel.webp",
     horarios: [
@@ -18,9 +18,9 @@ export const movies = [
     id: 2,
     title: "El diablo viste a la moda",
     genre: "Drama",
-    price: 7.990,
+    price: 5.990,
     imageSrc: "/ElDiabloVisteALaModa.jpg",
-    bannerSrc: "/DiabloVisteCarrusel.webp",
+    bannerSrc: "/ElDiabloCarrusel-2.webp",
     horarios: [
       { hora: 15, minuto: 0 },
       { hora: 20, minuto: 15 },
@@ -33,9 +33,9 @@ export const movies = [
     id: 3,
     title: "Ovejas Detectives",
     genre: "Drama",
-    price: 4.990,
+    price: 5.990,
     imageSrc: "/OvejasDetectives.jpg",
-    bannerSrc: "/OvejasCarrusel.webp",
+    bannerSrc: "/DetectiveOvejasCarrusel.webp",
     horarios: [
       { hora: 14, minuto: 45 },
       { hora: 19, minuto: 30 },
@@ -49,17 +49,20 @@ export const movies = [
 export const featuredSlides = [
   {
     id: 1,
+    movieId: 3,
     imageSrc: "/DetectiveOvejaCarrusel.webp",
     background: "linear-gradient(115deg, #0f5bd7 0%, #38bdf8 20%)",
   },
   {
     id: 2,
+    movieId: 1,
     imageSrc: "/MichaelCarrusel.webp",
     background: "linear-gradient(115deg, #0f5bd7 0%, #38bdf8 20%)",
   },
   {
     id: 3,
-    imageSrc: "/DiabloVisteModaCarrusel.webp",
+    movieId: 2,
+    imageSrc: "/ElDiabloCarrusel-2.webp",
     background: "linear-gradient(115deg, #0f5bd7 0%, #38bdf8 20%)",
   }
 ];

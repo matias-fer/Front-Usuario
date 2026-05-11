@@ -1,10 +1,14 @@
 import "./pages.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import { useAuth } from '../contexts/AuthContext';
 import { useCarrito } from '../contexts/carritoContext';
+
+const SEAT_ROWS = ['A', 'B', 'C', 'D', 'E', 'F'];
+const SEAT_COLUMNS = [1, 2, 3, 4, 5, 6, 7, 8];
+const OCCUPIED_SEATS = new Set(['A3', 'A4', 'B6', 'C2', 'D7', 'E1', 'F8']);
 
 function ResumenPedido() {
   const navigate = useNavigate();
@@ -12,6 +16,35 @@ function ResumenPedido() {
   const { cartItems, obtenerPrecioTotal, vaciarCarrito } = useCarrito();
   const [aceptoTerminos, setAceptoTerminos] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [seatError, setSeatError] = useState('');
+
+  const totalTickets = cartItems.reduce((total, item) => total + item.cantidad, 0);
+
+  useEffect(() => {
+    setSelectedSeats([]);
+    setSeatError('');
+  }, [totalTickets]);
+
+  const handleSeatToggle = (seatId) => {
+    if (OCCUPIED_SEATS.has(seatId) || confirmando) {
+      return;
+    }
+
+    if (selectedSeats.includes(seatId)) {
+      setSelectedSeats((currentSeats) => currentSeats.filter((seat) => seat !== seatId));
+      setSeatError('');
+      return;
+    }
+
+    if (selectedSeats.length >= totalTickets) {
+      setSeatError(`Solo puedes seleccionar ${totalTickets} asiento${totalTickets === 1 ? '' : 's'}.`);
+      return;
+    }
+
+    setSelectedSeats((currentSeats) => [...currentSeats, seatId]);
+    setSeatError('');
+  };
 
   if (!isRegistered) {
     return (
@@ -46,6 +79,11 @@ function ResumenPedido() {
   const totalPrice = obtenerPrecioTotal();
 
   const handleConfirmarPedido = () => {
+    if (selectedSeats.length !== totalTickets) {
+      setSeatError(`Debes seleccionar ${totalTickets} asiento${totalTickets === 1 ? '' : 's'} antes de continuar.`);
+      return;
+    }
+
     if (!aceptoTerminos) {
       alert('Debes aceptar los términos y condiciones');
       return;
@@ -59,7 +97,9 @@ function ResumenPedido() {
         id: Date.now(),
         usuario: getDisplayName(),
         items: cartItems,
+        asientos: selectedSeats,
         total: totalPrice,
+        totalEntradas: totalTickets,
         fecha: new Date().toLocaleDateString('es-ES'),
         hora: new Date().toLocaleTimeString('es-ES'),
         estado: 'Confirmado'
@@ -93,6 +133,7 @@ function ResumenPedido() {
                 <p><strong>Usuario:</strong> {getDisplayName()}</p>
                 <p><strong>Fecha:</strong> {new Date().toLocaleDateString('es-ES')}</p>
                 <p><strong>Hora:</strong> {new Date().toLocaleTimeString('es-ES')}</p>
+                <p><strong>Entradas:</strong> {totalTickets}</p>
               </div>
             </section>
 
@@ -118,6 +159,72 @@ function ResumenPedido() {
                   </div>
                 ))}
               </div>
+            </section>
+
+            {/* Selección de asientos */}
+            <section className="resumen-asientos">
+              <div className="resumen-asientos__header">
+                <div>
+                  <h2>Selecciona tus asientos</h2>
+                  <p>
+                    Elige {totalTickets} asiento{totalTickets === 1 ? '' : 's'} para continuar con el pago.
+                  </p>
+                </div>
+                <div className="resumen-asientos__counter">
+                  <span>Seleccionados</span>
+                  <strong>{selectedSeats.length}/{totalTickets}</strong>
+                </div>
+              </div>
+
+              <div className="seat-map__screen">Pantalla</div>
+
+              <div className="seat-map">
+                {SEAT_ROWS.map((row) => (
+                  <div key={row} className="seat-map__row">
+                    <span className="seat-map__row-label">{row}</span>
+                    <div className="seat-map__grid">
+                      {SEAT_COLUMNS.map((column) => {
+                        const seatId = `${row}${column}`;
+                        const isOccupied = OCCUPIED_SEATS.has(seatId);
+                        const isSelected = selectedSeats.includes(seatId);
+
+                        return (
+                          <button
+                            key={seatId}
+                            type="button"
+                            className={`seat ${isOccupied ? 'seat--occupied' : ''} ${isSelected ? 'seat--selected' : ''}`}
+                            onClick={() => handleSeatToggle(seatId)}
+                            disabled={isOccupied || confirmando}
+                            aria-pressed={isSelected}
+                            aria-label={`Asiento ${seatId}${isOccupied ? ', ocupado' : ''}`}
+                          >
+                            {seatId}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="seat-legend">
+                <span className="seat-legend__item"><i className="seat seat--available" /> Disponible</span>
+                <span className="seat-legend__item"><i className="seat seat--selected" /> Seleccionado</span>
+                <span className="seat-legend__item"><i className="seat seat--occupied" /> Ocupado</span>
+              </div>
+
+              {seatError ? <p className="seat-error">{seatError}</p> : null}
+
+              {selectedSeats.length > 0 ? (
+                <div className="seat-selection-summary">
+                  <span>Asientos elegidos:</span>
+                  <div className="seat-chips">
+                    {selectedSeats.map((seat) => (
+                      <span key={seat} className="seat-chip">{seat}</span>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </section>
 
             {/* Resumen financiero */}
@@ -163,7 +270,7 @@ function ResumenPedido() {
               <button
                 className="resumen-confirmar-btn"
                 onClick={handleConfirmarPedido}
-                disabled={!aceptoTerminos || confirmando}
+                disabled={!aceptoTerminos || confirmando || selectedSeats.length !== totalTickets}
               >
                 {confirmando ? 'Procesando...' : 'Confirmar Pedido'}
               </button>

@@ -33,6 +33,14 @@ export const AuthProvider = ({ children }) => {
     setUserProfile(profile);
   };
 
+  const isRegisteredUser = useCallback((email) => {
+    if (!userProfile?.email || !email) {
+      return false;
+    }
+
+    return userProfile.email.trim().toLowerCase() === email.trim().toLowerCase();
+  }, [userProfile]);
+
   const loginUser = useCallback((email, password) => {
     if (!userProfile) {
       return false;
@@ -82,10 +90,11 @@ export const AuthProvider = ({ children }) => {
     userProfile,
     getDisplayName,
     markAsRegistered,
+    isRegisteredUser,
     loginUser,
     updateProfile,
     logout,
-  }), [getDisplayName, isRegistered, loginUser, logout, updateProfile, userProfile]);
+  }), [getDisplayName, isRegistered, isRegisteredUser, loginUser, logout, updateProfile, userProfile]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -5,23 +5,28 @@ const CARRITO_STORAGE_KEY = 'cine-flow-carrito';
 const CarritoContext = createContext(null);
 
 export const CarritoProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    if (typeof window === 'undefined') {
+      return [];
+    }
+
+    const storedCart = window.localStorage.getItem(CARRITO_STORAGE_KEY);
+
+    if (!storedCart) {
+      return [];
+    }
+
+    try {
+      return JSON.parse(storedCart);
+    } catch {
+      window.localStorage.removeItem(CARRITO_STORAGE_KEY);
+      return [];
+    }
+  });
 
   useEffect(() => {
-    const storedCart = window.localStorage.getItem(CARRITO_STORAGE_KEY);
-    if (storedCart) {
-      try {
-        setCartItems(JSON.parse(storedCart));
-      } catch {
-        window.localStorage.removeItem(CARRITO_STORAGE_KEY);
-      }
-    }
-  }, []);
-
-  const saveCart = useCallback((items) => {
-    window.localStorage.setItem(CARRITO_STORAGE_KEY, JSON.stringify(items));
-    setCartItems(items);
-  }, []);
+    window.localStorage.setItem(CARRITO_STORAGE_KEY, JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const agregarAlCarrito = useCallback((product) => {
     setCartItems((prevItems) => {
@@ -38,18 +43,15 @@ export const CarritoProvider = ({ children }) => {
         updatedItems = [...prevItems, { ...product, cantidad: 1 }];
       }
 
-      saveCart(updatedItems);
       return updatedItems;
     });
-  }, [saveCart]);
+  }, []);
 
   const removerDelCarrito = useCallback((productId) => {
     setCartItems((prevItems) => {
-      const updatedItems = prevItems.filter((item) => item.id !== productId);
-      saveCart(updatedItems);
-      return updatedItems;
+      return prevItems.filter((item) => item.id !== productId);
     });
-  }, [saveCart]);
+  }, []);
 
   const actualizarCantidad = useCallback((productId, cantidad) => {
     setCartItems((prevItems) => {
@@ -57,13 +59,11 @@ export const CarritoProvider = ({ children }) => {
         return prevItems.filter((item) => item.id !== productId);
       }
 
-      const updatedItems = prevItems.map((item) =>
+      return prevItems.map((item) =>
         item.id === productId ? { ...item, cantidad } : item
       );
-      saveCart(updatedItems);
-      return updatedItems;
     });
-  }, [saveCart]);
+  }, []);
 
   const vaciarCarrito = useCallback(() => {
     window.localStorage.removeItem(CARRITO_STORAGE_KEY);

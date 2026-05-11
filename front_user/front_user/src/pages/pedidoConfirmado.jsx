@@ -7,6 +7,8 @@ function PedidoConfirmado() {
   const location = useLocation();
   const navigate = useNavigate();
   const pedido = location.state?.pedido;
+  const asientos = Array.isArray(pedido?.asientos) ? pedido.asientos : [];
+  const totalEntradas = pedido?.totalEntradas ?? pedido?.items?.reduce((total, item) => total + item.cantidad, 0) ?? 0;
 
   if (!pedido) {
     return (
@@ -61,6 +63,10 @@ function PedidoConfirmado() {
                   <label>Estado:</label>
                   <p className="estado-confirmado">{pedido.estado}</p>
                 </div>
+                <div className="detalle-item">
+                  <label>Entradas:</label>
+                  <p>{totalEntradas}</p>
+                </div>
               </div>
             </section>
 
@@ -87,6 +93,17 @@ function PedidoConfirmado() {
                 ))}
               </div>
             </section>
+
+            {asientos.length > 0 ? (
+              <section className="confirmacion-asientos">
+                <h2>Asientos asignados</h2>
+                <div className="confirmacion-asientos__list">
+                  {asientos.map((seat) => (
+                    <span key={seat} className="confirmacion-asiento-chip">{seat}</span>
+                  ))}
+                </div>
+              </section>
+            ) : null}
 
             {/* Total */}
             <section className="confirmacion-total">

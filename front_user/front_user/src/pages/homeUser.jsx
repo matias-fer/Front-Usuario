@@ -30,9 +30,25 @@ function HomeUser() {
   };
 
   const handleComprarEntrada = (movie) => {
+    if (!isRegistered) {
+      setNotificacion('Primero debes iniciar sesión o registrarte para comprar entradas');
+      setTimeout(() => setNotificacion(null), 2500);
+      return;
+    }
+
     setPeliculaSeleccionada(movie);
     horarioProcesadoRef.current = false;
     setModalAbierto(true);
+  };
+
+  const handleClickSlide = (slide) => {
+    const movie = movies.find((item) => item.id === slide.movieId);
+
+    if (!movie) {
+      return;
+    }
+
+    handleComprarEntrada(movie);
   };
 
   const handleSeleccionarHorario = (horario) => {
@@ -69,7 +85,7 @@ function HomeUser() {
           </section>
         ) : null}
 
-        <Carousel slides={featuredSlides} />
+        <Carousel slides={featuredSlides} onSlideClick={handleClickSlide} />
 
         <section className="home-user__grid">
           {movies.map((movie) => (
