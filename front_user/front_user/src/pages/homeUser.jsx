@@ -51,20 +51,24 @@ function HomeUser() {
     handleComprarEntrada(movie);
   };
 
-  const handleSeleccionarHorario = (horario) => {
+  const handleSeleccionarHorario = ({ dia, nombreDia, fechaFuncionTexto, horario }) => {
     if (horarioProcesadoRef.current || !peliculaSeleccionada) {
       return;
     }
 
     horarioProcesadoRef.current = true;
+    const horaFormateada = formatearHora(horario.hora, horario.minuto);
     const peliculaConHorario = {
       ...peliculaSeleccionada,
-      horario: formatearHora(horario.hora, horario.minuto),
+      diaAgenda: dia,
+      diaAgendaNombre: nombreDia,
+      fechaFuncionTexto,
+      horario: horaFormateada,
       horaNum: horario.hora,
       minutoNum: horario.minuto,
     };
     agregarAlCarrito(peliculaConHorario);
-    setNotificacion(`${peliculaSeleccionada.title} a las ${formatearHora(horario.hora, horario.minuto)} agregado al carrito 🛒`);
+    setNotificacion(`${peliculaSeleccionada.title} - ${fechaFuncionTexto || nombreDia} a las ${horaFormateada} agregado al carrito 🛒`);
     setModalAbierto(false);
     setTimeout(() => setNotificacion(null), 2500);
   };

@@ -155,6 +155,63 @@
   color: #0a0b0d;
 }
 
+.agenda-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.agenda-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-start;
+  padding: 0.9rem 1rem;
+  border: 1px solid #d9deea;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #0a0b0d;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.agenda-btn:hover:not(:disabled) {
+  border-color: #1652f0;
+  background: #eef4ff;
+  transform: translateY(-2px);
+}
+
+.agenda-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.agenda-btn--active {
+  border-color: #1652f0;
+  background: #1652f0;
+  color: #ffffff;
+}
+
+.agenda-btn__numero {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.agenda-btn__nombre {
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.agenda-btn__estado {
+  font-size: 0.82rem;
+  color: inherit;
+  opacity: 0.8;
+}
+
 .horarios-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
@@ -184,6 +241,15 @@
   background: #1652f0;
   color: #ffffff;
   border-color: #1652f0;
+}
+
+.horarios-vacios {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #5b616e;
+  font-size: 0.95rem;
 }
 
 .modal-btn-cancel,
@@ -233,5 +299,9 @@
 
   .horarios-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .agenda-grid {
+    grid-template-columns: 1fr;
   }
 }

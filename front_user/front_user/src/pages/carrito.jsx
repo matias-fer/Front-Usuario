@@ -42,6 +42,11 @@ function Carrito() {
                     <div className="carrito-item__details">
                       <h3 className="carrito-item__title">{item.title}</h3>
                       <p className="carrito-item__genre">{item.genre}</p>
+                      {item.fechaFuncionTexto && item.horario ? (
+                        <p className="carrito-item__schedule">{item.fechaFuncionTexto} - {item.horario}</p>
+                      ) : item.diaAgendaNombre && item.horario ? (
+                        <p className="carrito-item__schedule">{item.diaAgendaNombre} - {item.horario}</p>
+                      ) : null}
                       <p className="carrito-item__price">${item.price.toFixed(3)}</p>
                     </div>
                     <div className="carrito-item__quantity">

@@ -1,16 +1,36 @@
+import { useEffect, useMemo, useState } from 'react';
 import './horariosModal.css';
-import { formatearHora } from '../database/horarios';
+import { formatearFechaFuncion, formatearDiaAgenda, formatearHora, obtenerSemanaActual } from '../database/horarios';
 
 function HorariosModal({ pelicula, onClose, onSelectHorario }) {
-  const horarios = pelicula.horarios || [];
+  const agenda = useMemo(() => {
+    return pelicula.agenda?.length > 0
+      ? pelicula.agenda
+      : [{ dia: 1, nombre: 'Lunes', horarios: pelicula.horarios || [] }];
+  }, [pelicula.agenda, pelicula.horarios]);
+  const semanaActual = obtenerSemanaActual();
 
-  if (horarios.length === 0) {
+  const [diaSeleccionado, setDiaSeleccionado] = useState(() => {
+    const diaInicial = agenda.find((dia) => dia.horarios?.length > 0);
+    return diaInicial?.dia || agenda[0]?.dia || 1;
+  });
+
+  useEffect(() => {
+    const diaInicial = agenda.find((dia) => dia.horarios?.length > 0);
+    setDiaSeleccionado(diaInicial?.dia || agenda[0]?.dia || 1);
+  }, [agenda]);
+
+  const diaActivo = agenda.find((dia) => dia.dia === diaSeleccionado) || agenda[0];
+  const diaCalendarioActivo = semanaActual.find((dia) => dia.dia === diaSeleccionado);
+  const horarios = diaActivo?.horarios || [];
+
+  if (agenda.length === 0) {
     return (
       <div className="modal-overlay" onClick={onClose}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <button type="button" className="modal-close" onClick={onClose}>✕</button>
           <h2>Horarios No Disponibles</h2>
-          <p>No hay horarios disponibles para hoy. Intenta mañana.</p>
+          <p>No hay horarios disponibles para esta película.</p>
           <button type="button" className="modal-btn-ok" onClick={onClose}>Entendido</button>
         </div>
       </div>
@@ -47,22 +67,57 @@ function HorariosModal({ pelicula, onClose, onSelectHorario }) {
           </div>
 
           <div className="modal-horarios">
-            <h3>Selecciona un horario:</h3>
+            <h3>Agenda de días</h3>
+            <div className="agenda-grid">
+              {agenda.map((dia) => {
+                const isSelected = diaSeleccionado === dia.dia;
+                const hasHorarios = (dia.horarios || []).length > 0;
+                const diaCalendario = semanaActual.find((item) => item.dia === dia.dia);
+
+                return (
+                  <button
+                    key={dia.dia}
+                    type="button"
+                    className={`agenda-btn ${isSelected ? 'agenda-btn--active' : ''}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setDiaSeleccionado(dia.dia);
+                    }}
+                    disabled={!hasHorarios}
+                  >
+                    <span className="agenda-btn__numero">{diaCalendario ? formatearFechaFuncion(diaCalendario.fecha) : `Día ${dia.dia}`}</span>
+                    <span className="agenda-btn__nombre">{dia.nombre || formatearDiaAgenda(dia.dia)}</span>
+                    {!hasHorarios ? <span className="agenda-btn__estado">Sin funciones</span> : null}
+                  </button>
+                );
+              })}
+            </div>
+
+            <h3>Selecciona un horario para {diaCalendarioActivo ? formatearFechaFuncion(diaCalendarioActivo.fecha) : (diaActivo?.nombre || formatearDiaAgenda(diaSeleccionado))}</h3>
             <div className="horarios-grid">
-              {horarios.map((horario, index) => (
+              {horarios.length > 0 ? horarios.map((horario, index) => (
                 <button
-                  key={index}
+                  key={`${diaSeleccionado}-${index}`}
                   type="button"
                   className="horario-btn"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    onSelectHorario(horario);
+                    onSelectHorario({
+                      dia: diaSeleccionado,
+                      nombreDia: diaActivo?.nombre || formatearDiaAgenda(diaSeleccionado),
+                      fechaFuncion: diaCalendarioActivo?.fecha || null,
+                      fechaFuncionTexto: diaCalendarioActivo ? formatearFechaFuncion(diaCalendarioActivo.fecha) : '',
+                      horario,
+                    });
                   }}
                 >
                   {formatearHora(horario.hora, horario.minuto)}
                 </button>
-              ))}
+              )) : (
+                <p className="horarios-vacios">No hay funciones disponibles para este día.</p>
+              )}
             </div>
           </div>
         </div>

@@ -1,3 +1,5 @@
+import { crearAgendaSemanal } from './horarios';
+
 export const movies = [
   {
     id: 1,
@@ -6,6 +8,37 @@ export const movies = [
     price: 5.990,
     imageSrc: "/Michael.jpg",
     bannerSrc: "/MichaelCarrusel.webp",
+    agenda: crearAgendaSemanal({
+      1: [
+        { hora: 16, minuto: 30 },
+        { hora: 21, minuto: 0 },
+      ],
+      2: [
+        { hora: 16, minuto: 30 },
+        { hora: 21, minuto: 0 },
+      ],
+      3: [
+        { hora: 18, minuto: 0 },
+        { hora: 22, minuto: 15 },
+      ],
+      4: [
+        { hora: 16, minuto: 30 },
+        { hora: 21, minuto: 0 },
+      ],
+      5: [
+        { hora: 15, minuto: 45 },
+        { hora: 20, minuto: 30 },
+      ],
+      6: [
+        { hora: 14, minuto: 30 },
+        { hora: 18, minuto: 45 },
+        { hora: 22, minuto: 0 },
+      ],
+      7: [
+        { hora: 14, minuto: 30 },
+        { hora: 17, minuto: 30 },
+      ],
+    }),
     horarios: [
       { hora: 16, minuto: 30 },
       { hora: 21, minuto: 0 },
@@ -21,6 +54,37 @@ export const movies = [
     price: 5.990,
     imageSrc: "/ElDiabloVisteALaModa.jpg",
     bannerSrc: "/ElDiabloCarrusel-2.webp",
+    agenda: crearAgendaSemanal({
+      1: [
+        { hora: 15, minuto: 0 },
+        { hora: 20, minuto: 15 },
+      ],
+      2: [
+        { hora: 15, minuto: 0 },
+        { hora: 20, minuto: 15 },
+      ],
+      3: [
+        { hora: 14, minuto: 30 },
+        { hora: 19, minuto: 15 },
+      ],
+      4: [
+        { hora: 15, minuto: 0 },
+        { hora: 20, minuto: 15 },
+      ],
+      5: [
+        { hora: 16, minuto: 0 },
+        { hora: 21, minuto: 30 },
+      ],
+      6: [
+        { hora: 13, minuto: 45 },
+        { hora: 18, minuto: 30 },
+        { hora: 22, minuto: 15 },
+      ],
+      7: [
+        { hora: 14, minuto: 0 },
+        { hora: 19, minuto: 0 },
+      ],
+    }),
     horarios: [
       { hora: 15, minuto: 0 },
       { hora: 20, minuto: 15 },
@@ -36,6 +100,37 @@ export const movies = [
     price: 5.990,
     imageSrc: "/OvejasDetectives.jpg",
     bannerSrc: "/DetectiveOvejasCarrusel.webp",
+    agenda: crearAgendaSemanal({
+      1: [
+        { hora: 14, minuto: 45 },
+        { hora: 19, minuto: 30 },
+      ],
+      2: [
+        { hora: 14, minuto: 45 },
+        { hora: 19, minuto: 30 },
+      ],
+      3: [
+        { hora: 16, minuto: 15 },
+        { hora: 21, minuto: 0 },
+      ],
+      4: [
+        { hora: 14, minuto: 45 },
+        { hora: 19, minuto: 30 },
+      ],
+      5: [
+        { hora: 15, minuto: 30 },
+        { hora: 20, minuto: 45 },
+      ],
+      6: [
+        { hora: 12, minuto: 45 },
+        { hora: 17, minuto: 15 },
+        { hora: 21, minuto: 45 },
+      ],
+      7: [
+        { hora: 13, minuto: 30 },
+        { hora: 18, minuto: 0 },
+      ],
+    }),
     horarios: [
       { hora: 14, minuto: 45 },
       { hora: 19, minuto: 30 },
