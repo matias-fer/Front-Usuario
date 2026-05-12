@@ -32,6 +32,15 @@
   display: none;
 }
 
+.carousel-item--clickable {
+  cursor: pointer;
+}
+
+.carousel-item--clickable:focus {
+  outline: 3px solid rgba(22, 82, 240, 0.55);
+  outline-offset: -3px;
+}
+
 .carousel-item.active {
   display: block;
   animation: fadeIn 0.6s ease-in-out;

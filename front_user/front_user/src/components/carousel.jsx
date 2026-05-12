@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './carousel.css';
 
-function HeroCarousel({ slides = [] }) {
+function HeroCarousel({ slides = [], onSlideClick }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -35,8 +35,21 @@ function HeroCarousel({ slides = [] }) {
           {slides.map((slide, index) => (
             <div
               key={slide.id}
-              className={`carousel-item ${index === activeIndex ? 'active' : ''}`}
+              className={`carousel-item ${index === activeIndex ? 'active' : ''} ${onSlideClick ? 'carousel-item--clickable' : ''}`}
               style={{ backgroundImage: `url(${slide.imageSrc})` }}
+              role={onSlideClick ? 'button' : undefined}
+              tabIndex={onSlideClick ? 0 : undefined}
+              onClick={onSlideClick ? () => onSlideClick(slide) : undefined}
+              onKeyDown={
+                onSlideClick
+                  ? (event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        onSlideClick(slide);
+                      }
+                    }
+                  : undefined
+              }
             >
               {slide.tag || slide.title || slide.ctaText ? (
                 <div className="carousel-caption">

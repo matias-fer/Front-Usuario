@@ -1,5 +1,7 @@
 # Getting Started with Create React App
 
+This app is intended to run on Node.js 18 or 20. Newer runtimes such as Node.js 24 surface deprecation warnings from the underlying CRA toolchain.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

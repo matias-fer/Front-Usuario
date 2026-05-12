@@ -33,6 +33,29 @@ export const AuthProvider = ({ children }) => {
     setUserProfile(profile);
   };
 
+  const isRegisteredUser = useCallback((email) => {
+    if (!userProfile?.email || !email) {
+      return false;
+    }
+
+    return userProfile.email.trim().toLowerCase() === email.trim().toLowerCase();
+  }, [userProfile]);
+
+  const loginUser = useCallback((email, password) => {
+    if (!userProfile) {
+      return false;
+    }
+
+    const isValidLogin = userProfile.email === email && userProfile.password === password;
+
+    if (isValidLogin) {
+      window.localStorage.setItem(AUTH_STORAGE_KEY, 'true');
+      setIsRegistered(true);
+    }
+
+    return isValidLogin;
+  }, [userProfile]);
+
   const updateProfile = useCallback((nextProfile = {}) => {
     const mergedProfile = {
       ...userProfile,
@@ -47,9 +70,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(() => {
     window.localStorage.removeItem(AUTH_STORAGE_KEY);
-    window.localStorage.removeItem(PROFILE_STORAGE_KEY);
     setIsRegistered(false);
-    setUserProfile(null);
   }, []);
 
   const getDisplayName = useCallback(() => {
@@ -69,9 +90,11 @@ export const AuthProvider = ({ children }) => {
     userProfile,
     getDisplayName,
     markAsRegistered,
+    isRegisteredUser,
+    loginUser,
     updateProfile,
     logout,
-  }), [getDisplayName, isRegistered, logout, updateProfile, userProfile]);
+  }), [getDisplayName, isRegistered, isRegisteredUser, loginUser, logout, updateProfile, userProfile]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
